@@ -1,0 +1,43 @@
+# .github/workflows/ci.yml
+
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        platform: [web, android, ios]
+        include:
+          - platform: web
+            os: ubuntu-latest
+            device: chrome
+          - platform: android
+            os: ubuntu-latest
+            device: emulator
+          - platform: ios
+            os: macos-latest
+            device: iPhone
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: subosito/flutter-action@v2
+      
+      - run: flutter pub get
+      
+      - name: Run Android tests
+        if: matrix.platform == 'android'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          script: flutter test integration_test/ -d emulator
+      
+      - name: Run web/iOS tests
+        if: matrix.platform != 'android'
+        run: flutter test integration_test/ -d ${{ matrix.device }}
