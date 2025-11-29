@@ -129,19 +129,58 @@ Tests automatically restart app before each test (clean state).
 
 ## BDD Scenario Standards
 
-BDD scenarios describe BEHAVIOR, not implementation.
+**Core Principle:** Givens describe WHAT state, not HOW you got there.
 
-CORRECT examples:
-- "When I tap the increment button"
-- "Then the counter displays 5"
-- "Given the counter is at 0"
+Implementation details (navigation, clicking, typing) belong in step definitions, NOT scenarios.
 
-WRONG examples (do not write these):
-- "When I tap the button with key 'increment-button'"
-- "Then the counter widget state equals 5"
-- "Given _counter variable is 0"
+**Good BDD (Declarative State):**
+```gherkin
+Given the counter is at 0
+When I increment once
+Then the counter shows 1
+```
 
-Never mention Keys, widgets, or code details in BDD scenarios.
+**Bad BDD (Implementation Details):**
+```gherkin
+Given I launched the app
+And I navigated to the home screen
+And I waited for the counter to load
+When I tap the button with key 'increment-button'
+Then the Text widget displays '1'
+```
+
+**Rules:**
+1. Givens set up state, not navigation steps
+2. Whens describe user actions in business terms
+3. Thens verify observable behavior
+4. Never mention: Keys, widgets, class names, variable names, code structure
+5. If your Given is longer than When+Then combined, you're doing it wrong
+
+**For simple apps:** Default state can be implied
+```gherkin
+Scenario: Fresh start
+  Then the counter shows 0
+
+Scenario: Single increment
+  When I tap increment
+  Then the counter shows 1
+```
+
+**For complex state:** Use named states, not step-by-step setup
+```gherkin
+# Good
+Given I have items in my cart
+When I checkout
+Then I see order confirmation
+
+# Bad
+Given I navigate to products
+And I click "Add to Cart" on item 1
+And I click "Add to Cart" on item 2
+And I go to cart page
+When I click checkout
+Then I see confirmation
+```
 
 ## Git Workflow
 

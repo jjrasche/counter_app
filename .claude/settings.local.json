@@ -14,7 +14,8 @@
       "Write",
       "Edit",
       "Read(./**/*)",
-      "Bash(touch:*)"
+      "Bash(touch:*)",
+      "Bash(dart format:*)"
     ],
     "deny": [],
     "ask": []
