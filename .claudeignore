@@ -1,0 +1,48 @@
+# Build outputs
+build/
+.dart_tool/
+*.g.dart
+*.freezed.dart
+
+# Platform-specific
+android/
+ios/
+linux/
+macos/
+windows/
+web/index.html
+web/manifest.json
+web/favicon.png
+
+# Dependencies
+.pub-cache/
+.packages
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.code-workspace
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+
+# Git
+.git/
+
+# Test outputs
+coverage/
+test/.test_coverage.dart
+
+# Logs
+*.log
+
+# Temporary
+*.tmp
+*.temp
+.DS_Store
+
+# GitHub Actions artifacts
+chromedriver/
