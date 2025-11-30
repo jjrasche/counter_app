@@ -50,31 +50,32 @@ jobs:
         path: build/app/outputs/flutter-apk/app-release.apk
         retention-days: 1
 
-  build-ios:
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v4
+  # iOS build commented out - requires code signing for deployment
+  # build-ios:
+  #   runs-on: macos-latest
+  #   steps:
+  #   - uses: actions/checkout@v4
 
-    - uses: subosito/flutter-action@v2
+  #   - uses: subosito/flutter-action@v2
 
-    - run: flutter pub get
+  #   - run: flutter pub get
 
-    - name: Build iOS IPA (no codesign)
-      run: flutter build ios --release --no-codesign
+  #   - name: Build iOS IPA (no codesign)
+  #     run: flutter build ios --release --no-codesign
 
-    - name: Create IPA archive
-      run: |
-        mkdir -p Payload
-        cp -r build/ios/iphoneos/Runner.app Payload/
-        zip -r build/app-release.ipa Payload
-        rm -rf Payload
+  #   - name: Create IPA archive
+  #     run: |
+  #       mkdir -p Payload
+  #       cp -r build/ios/iphoneos/Runner.app Payload/
+  #       zip -r build/app-release.ipa Payload
+  #       rm -rf Payload
 
-    - name: Upload iOS IPA
-      uses: actions/upload-artifact@v4
-      with:
-        name: ios-ipa
-        path: build/app-release.ipa
-        retention-days: 1
+  #   - name: Upload iOS IPA
+  #     uses: actions/upload-artifact@v4
+  #     with:
+  #       name: ios-ipa
+  #       path: build/app-release.ipa
+  #       retention-days: 1
 
   deploy-web:
     needs: build-web
@@ -129,29 +130,29 @@ jobs:
           Build from ${{ github.event_name == 'pull_request' && format('PR #{0}', github.event.pull_request.number) || format('commit {0}', github.sha) }}
           Branch: ${{ github.ref_name }}
 
-  deploy-ios:
-    needs: build-ios
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
-    - uses: actions/checkout@v4
+  # iOS deployment commented out - requires code signing
+  # deploy-ios:
+  #   needs: build-ios
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v4
 
-    - name: Download iOS IPA
-      uses: actions/download-artifact@v4
-      with:
-        name: ios-ipa
-        path: build
+  #   - name: Download iOS IPA
+  #     uses: actions/download-artifact@v4
+  #     with:
+  #       name: ios-ipa
+  #       path: build
 
-    - name: Deploy to Firebase App Distribution
-      uses: wzieba/Firebase-Distribution-Github-Action@v1
-      with:
-        appId: ${{ secrets.FIREBASE_IOS_APP_ID }}
-        serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        groups: testers
-        file: build/app-release.ipa
-        releaseNotes: |
-          Build from ${{ github.event_name == 'pull_request' && format('PR #{0}', github.event.pull_request.number) || format('commit {0}', github.sha) }}
-          Branch: ${{ github.ref_name }}
-
-          NOTE: This IPA is built without code signing and cannot be installed on physical devices.
-          For simulator testing only. See DEPLOYMENT.md for physical device setup.
+  #   - name: Deploy to Firebase App Distribution
+  #     uses: wzieba/Firebase-Distribution-Github-Action@v1
+  #     with:
+  #       appId: ${{ secrets.FIREBASE_IOS_APP_ID }}
+  #       serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+  #       groups: testers
+  #       file: build/app-release.ipa
+  #       releaseNotes: |
+  #         Build from ${{ github.event_name == 'pull_request' && format('PR #{0}', github.event.pull_request.number) || format('commit {0}', github.sha) }}
+  #         Branch: ${{ github.ref_name }}
+  #
+  #         NOTE: This IPA is built without code signing and cannot be installed on physical devices.
+  #         For simulator testing only. See DEPLOYMENT.md for physical device setup.
