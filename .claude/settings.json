@@ -1,0 +1,48 @@
+{
+  "description": "Shared Claude Code settings for this project",
+  "defaultModel": "sonnet",
+  "permissions": {
+    "description": "Default permissions for common Flutter/BDD operations",
+    "Bash": {
+      "flutter test integration_test/": "allow",
+      "flutter pub get": "allow",
+      "flutter pub add": "ask",
+      "dart format": "allow",
+      "git status": "allow",
+      "git add": "allow",
+      "git commit": "allow",
+      "git push": "allow",
+      "gh pr": "allow"
+    },
+    "Read": {
+      "**/*.dart": "allow",
+      "**/*.feature": "allow",
+      "**/*.md": "allow",
+      "**/*.yaml": "allow",
+      "**/*.json": "allow"
+    },
+    "Edit": {
+      "**/*.dart": "allow",
+      "**/*.feature": "ask",
+      "integration_test/**": "ask",
+      ".github/workflows/**": "ask",
+      ".claude/CLAUDE.md": "ask"
+    },
+    "Write": {
+      "lib/**/*.dart": "allow",
+      "integration_test/**/*.dart": "allow",
+      "docs/bdd/**/*.feature": "allow"
+    }
+  },
+  "features": {
+    "autoFormat": true,
+    "runTestsBeforeCommit": false,
+    "bddWorkflowEnforcement": true
+  },
+  "customRules": [
+    "Never use TODO or FIXME comments",
+    "Always add Key to interactive widgets",
+    "Integration tests must match BDD scenarios",
+    "Follow data-driven testing approach"
+  ]
+}
