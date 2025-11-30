@@ -15,7 +15,15 @@
       "Edit",
       "Read(./**/*)",
       "Bash(touch:*)",
-      "Bash(dart format:*)"
+      "Bash(dart format:*)",
+      "WebSearch",
+      "WebFetch",
+      "Bash(cat:*)",
+      "Bash(chmod:*)",
+      "Bash(if [ -f .gitignore ])",
+      "Bash(then grep -q \"\\.claude/settings\\.local\\.json\" .gitignore)",
+      "Bash(else echo -e \"# Claude Code personal settings\\n.claude/settings.local.json\\n.claude/*.log\")",
+      "Bash(fi)"
     ],
     "deny": [],
     "ask": []

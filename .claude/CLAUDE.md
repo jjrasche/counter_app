@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+@.claude/context/flutter-patterns.md
+
 ## After Reading This Document
 
 When human says "Read CLAUDE.md", respond ONLY with:
