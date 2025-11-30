@@ -36,6 +36,7 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 33
+          arch: x86_64
           script: flutter test integration_test/ -d emulator
 
       - name: Install ChromeDriver
