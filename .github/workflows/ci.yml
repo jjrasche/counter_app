@@ -51,6 +51,13 @@ jobs:
         if: matrix.platform == 'web'
         run: flutter drive --driver=test_driver/integration_test.dart --target=integration_test/counter_test.dart -d web-server
 
+      - name: Start iOS Simulator
+        if: matrix.platform == 'ios'
+        run: |
+          xcrun simctl list devices available
+          DEVICE_ID=$(xcrun simctl list devices available | grep -m 1 "iPhone" | sed -E 's/.*\(([A-F0-9-]+)\).*/\1/')
+          xcrun simctl boot $DEVICE_ID
+
       - name: Run iOS tests
         if: matrix.platform == 'ios'
-        run: flutter test integration_test/ -d ${{ matrix.device }}
+        run: flutter test integration_test/
