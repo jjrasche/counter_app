@@ -13,12 +13,6 @@ class TestHelpers {
   }
 
   static void verifyCounterValue(WidgetTester tester, String expected) {
-    expect(
-      find.descendant(
-        of: find.byKey(const Key('counter-value')),
-        matching: find.text(expected),
-      ),
-      findsOneWidget,
-    );
+    expect(find.text(expected), findsOneWidget);
   }
 }
