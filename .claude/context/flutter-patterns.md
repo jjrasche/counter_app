@@ -55,24 +55,6 @@ for (final scenario in scenarios) {
 }
 ```
 
-## BDD Scenario Style
-
-**Declarative (what), not imperative (how):**
-
-```gherkin
-# ✅ Good
-Given the user is logged out
-When I log in with valid credentials
-Then I see the dashboard
-
-# ❌ Bad (too implementation-focused)
-Given I navigate to the login screen
-And I tap the email field with key 'email-input'
-And I type 'user@example.com'
-When I tap the button with key 'login-button'
-Then the Text widget shows 'Dashboard'
-```
-
 ## State Management
 
 **This project uses setState() by default:**
