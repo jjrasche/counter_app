@@ -2,150 +2,155 @@ name: Deploy
 
 on:
   pull_request:
-    branches: [main]
+    branches: [ main ]
   push:
-    branches: [main]
+    branches: [ main ]
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
 
 jobs:
   build-web:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - uses: subosito/flutter-action@v2
+    - uses: subosito/flutter-action@v2
 
-      - run: flutter pub get
+    - run: flutter pub get
 
-      - name: Build web
-        run: flutter build web --release
+    - name: Build web
+      run: flutter build web --release
 
-      - name: Upload web build
-        uses: actions/upload-artifact@v4
-        with:
-          name: web-build
-          path: build/web
-          retention-days: 1
+    - name: Upload web build
+      uses: actions/upload-artifact@v4
+      with:
+        name: web-build
+        path: build/web
+        retention-days: 1
 
   build-android:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - uses: subosito/flutter-action@v2
+    - uses: subosito/flutter-action@v2
 
-      - run: flutter pub get
+    - run: flutter pub get
 
-      - name: Build Android APK
-        run: flutter build apk --release
+    - name: Build Android APK
+      run: flutter build apk --release
 
-      - name: Upload Android APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
-          retention-days: 1
+    - name: Upload Android APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-apk
+        path: build/app/outputs/flutter-apk/app-release.apk
+        retention-days: 1
 
   build-ios:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - uses: subosito/flutter-action@v2
+    - uses: subosito/flutter-action@v2
 
-      - run: flutter pub get
+    - run: flutter pub get
 
-      - name: Build iOS IPA (no codesign)
-        run: flutter build ios --release --no-codesign
+    - name: Build iOS IPA (no codesign)
+      run: flutter build ios --release --no-codesign
 
-      - name: Create IPA archive
-        run: |
-          mkdir -p Payload
-          cp -r build/ios/iphoneos/Runner.app Payload/
-          zip -r build/app-release.ipa Payload
-          rm -rf Payload
+    - name: Create IPA archive
+      run: |
+        mkdir -p Payload
+        cp -r build/ios/iphoneos/Runner.app Payload/
+        zip -r build/app-release.ipa Payload
+        rm -rf Payload
 
-      - name: Upload iOS IPA
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-ipa
-          path: build/app-release.ipa
-          retention-days: 1
+    - name: Upload iOS IPA
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-ipa
+        path: build/app-release.ipa
+        retention-days: 1
 
   deploy-web:
     needs: build-web
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - name: Download web build
-        uses: actions/download-artifact@v4
-        with:
-          name: web-build
-          path: build/web
+    - name: Download web build
+      uses: actions/download-artifact@v4
+      with:
+        name: web-build
+        path: build/web
 
-      - name: Deploy to Firebase Hosting (Preview)
-        if: github.event_name == 'pull_request'
-        uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          projectId: counter-app-REPLACE-ME
-          expires: 7d
+    - name: Deploy to Firebase Hosting (Preview)
+      if: github.event_name == 'pull_request'
+      uses: FirebaseExtended/action-hosting-deploy@v0
+      with:
+        repoToken: ${{ secrets.GITHUB_TOKEN }}
+        firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        projectId: counter-af38d
+        expires: 7d
 
-      - name: Deploy to Firebase Hosting (Production)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          projectId: counter-app-REPLACE-ME
-          channelId: live
+    - name: Deploy to Firebase Hosting (Production)
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      uses: FirebaseExtended/action-hosting-deploy@v0
+      with:
+        repoToken: ${{ secrets.GITHUB_TOKEN }}
+        firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        projectId: counter-af38d
+        channelId: live
 
   deploy-android:
     needs: build-android
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - name: Download Android APK
-        uses: actions/download-artifact@v4
-        with:
-          name: android-apk
-          path: build/app/outputs/flutter-apk
+    - name: Download Android APK
+      uses: actions/download-artifact@v4
+      with:
+        name: android-apk
+        path: build/app/outputs/flutter-apk
 
-      - name: Deploy to Firebase App Distribution
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
-        with:
-          appId: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
-          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          groups: testers
-          file: build/app/outputs/flutter-apk/app-release.apk
-          releaseNotes: |
-            Build from ${{ github.event_name == 'pull_request' && format('PR #{0}', github.event.pull_request.number) || format('commit {0}', github.sha) }}
-            Branch: ${{ github.ref_name }}
+    - name: Deploy to Firebase App Distribution
+      uses: wzieba/Firebase-Distribution-Github-Action@v1
+      with:
+        appId: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
+        serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        groups: testers
+        file: build/app/outputs/flutter-apk/app-release.apk
+        releaseNotes: |
+          Build from ${{ github.event_name == 'pull_request' && format('PR #{0}', github.event.pull_request.number) || format('commit {0}', github.sha) }}
+          Branch: ${{ github.ref_name }}
 
   deploy-ios:
     needs: build-ios
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - name: Download iOS IPA
-        uses: actions/download-artifact@v4
-        with:
-          name: ios-ipa
-          path: build
+    - name: Download iOS IPA
+      uses: actions/download-artifact@v4
+      with:
+        name: ios-ipa
+        path: build
 
-      - name: Deploy to Firebase App Distribution
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
-        with:
-          appId: ${{ secrets.FIREBASE_IOS_APP_ID }}
-          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          groups: testers
-          file: build/app-release.ipa
-          releaseNotes: |
-            Build from ${{ github.event_name == 'pull_request' && format('PR #{0}', github.event.pull_request.number) || format('commit {0}', github.sha) }}
-            Branch: ${{ github.ref_name }}
+    - name: Deploy to Firebase App Distribution
+      uses: wzieba/Firebase-Distribution-Github-Action@v1
+      with:
+        appId: ${{ secrets.FIREBASE_IOS_APP_ID }}
+        serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        groups: testers
+        file: build/app-release.ipa
+        releaseNotes: |
+          Build from ${{ github.event_name == 'pull_request' && format('PR #{0}', github.event.pull_request.number) || format('commit {0}', github.sha) }}
+          Branch: ${{ github.ref_name }}
 
-            NOTE: This IPA is built without code signing and cannot be installed on physical devices.
-            For simulator testing only. See DEPLOYMENT.md for physical device setup.
+          NOTE: This IPA is built without code signing and cannot be installed on physical devices.
+          For simulator testing only. See DEPLOYMENT.md for physical device setup.
