@@ -37,7 +37,19 @@ jobs:
         with:
           api-level: 33
           script: flutter test integration_test/ -d emulator
-      
-      - name: Run web/iOS tests
-        if: matrix.platform != 'android'
+
+      - name: Install ChromeDriver
+        if: matrix.platform == 'web'
+        run: npx @puppeteer/browsers install chromedriver@stable
+
+      - name: Start ChromeDriver
+        if: matrix.platform == 'web'
+        run: chromedriver --port=4444 &
+
+      - name: Run web tests
+        if: matrix.platform == 'web'
+        run: flutter drive --driver=test_driver/integration_test.dart --target=integration_test/counter_test.dart -d web-server
+
+      - name: Run iOS tests
+        if: matrix.platform == 'ios'
         run: flutter test integration_test/ -d ${{ matrix.device }}
