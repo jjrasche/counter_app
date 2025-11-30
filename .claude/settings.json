@@ -33,16 +33,5 @@
       "integration_test/**/*.dart": "allow",
       "docs/bdd/**/*.feature": "allow"
     }
-  },
-  "features": {
-    "autoFormat": true,
-    "runTestsBeforeCommit": false,
-    "bddWorkflowEnforcement": true
-  },
-  "customRules": [
-    "Never use TODO or FIXME comments",
-    "Always add Key to interactive widgets",
-    "Integration tests must match BDD scenarios",
-    "Follow data-driven testing approach"
-  ]
+  }
 }
