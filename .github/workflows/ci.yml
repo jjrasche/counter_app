@@ -60,4 +60,5 @@ jobs:
 
       - name: Run iOS tests
         if: matrix.platform == 'ios'
+        timeout-minutes: 10
         run: flutter test integration_test/
